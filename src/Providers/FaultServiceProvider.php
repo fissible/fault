@@ -42,10 +42,10 @@ class FaultServiceProvider extends ServiceProvider
 
     private function registerRoutes(): void
     {
-        $prefix     = config('watch.prefix', 'watch');
+        $prefix     = trim((string) config('watch.prefix', 'watch'), '/');
         $middleware = ['web'];
 
-        Route::prefix($prefix . '/faults')
+        Route::prefix(($prefix !== '' ? $prefix . '/' : '') . 'faults')
             ->name('watch.faults')
             ->middleware($middleware)
             ->group(function () {
