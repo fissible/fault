@@ -1,0 +1,57 @@
+{
+    "name": "fissible/fault",
+    "description": "Exception tracking and triage for fissible/watch cockpit",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "fissible/watch": "@dev",
+        "illuminate/contracts": "^11.0|^12.0",
+        "illuminate/database": "^11.0|^12.0",
+        "illuminate/http": "^11.0|^12.0",
+        "illuminate/routing": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/view": "^11.0|^12.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "orchestra/testbench": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fissible\\Fault\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fissible\\Fault\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Fissible\\Fault\\Providers\\FaultServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": {
+        "watch": {
+            "type": "path",
+            "url": "../watch"
+        },
+        "accord": {
+            "type": "path",
+            "url": "../accord"
+        },
+        "drift": {
+            "type": "path",
+            "url": "../drift"
+        },
+        "forge": {
+            "type": "path",
+            "url": "../forge"
+        }
+    }
+}
