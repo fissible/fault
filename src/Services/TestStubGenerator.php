@@ -8,15 +8,32 @@ use Fissible\Fault\Models\FaultGroup;
 
 class TestStubGenerator
 {
+    public function testClassName(FaultGroup $group): string
+    {
+        return $group->shortClass() . 'FaultTest';
+    }
+
+    public function testFilePath(FaultGroup $group): string
+    {
+        return base_path('tests/Unit/Faults/' . $this->testClassName($group) . '.php');
+    }
+
+    public function write(FaultGroup $group): void
+    {
+        $path = $this->testFilePath($group);
+        @mkdir(dirname($path), 0755, true);
+        file_put_contents($path, $this->generate($group));
+    }
+
     public function generate(FaultGroup $group): string
     {
-        $shortClass  = $group->shortClass();
-        $testClass   = $shortClass . 'FaultTest';
-        $hashShort   = substr($group->group_hash, 0, 8);
-        $file        = $group->relativeFile();
-        $line        = $group->line ?? '?';
-        $message     = addslashes($group->message ?? '(no message)');
-        $fullClass   = addslashes($group->class_name);
+        $testClass  = $this->testClassName($group);
+        $hashShort  = substr($group->group_hash, 0, 8);
+        $file       = $group->relativeFile();
+        $line       = $group->line ?? '?';
+        $message    = addslashes($group->message ?? '(no message)');
+        $fullClass  = addslashes($group->class_name);
+        $shortClass = $group->shortClass();
 
         return <<<PHP
 <?php
@@ -25,7 +42,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Faults;
 
-use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Group;
+use Tests\TestCase;
 
 /**
  * Regression test for fault group {$group->group_hash}
@@ -33,11 +52,12 @@ use PHPUnit\Framework\TestCase;
  * Exception : {$group->class_name}
  * File      : {$file}:{$line}
  * Message   : {$group->message}
- *
- * @group fault-{$hashShort}
  */
+#[Group('fault-{$hashShort}')]
 class {$testClass} extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Reproduce the scenario that triggered the {$shortClass} and assert it
      * no longer throws (or assert the new expected behaviour).

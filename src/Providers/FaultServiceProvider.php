@@ -54,6 +54,7 @@ class FaultServiceProvider extends ServiceProvider
                 Route::patch('/{faultGroup}/status', [FaultController::class, 'updateStatus'])->name('.status');
                 Route::patch('/{faultGroup}/notes', [FaultController::class, 'saveNotes'])->name('.notes');
                 Route::post('/{faultGroup}/test', [FaultController::class, 'generateTest'])->name('.test');
+                Route::post('/{faultGroup}/run-test', [FaultController::class, 'runTest'])->middleware('watch.local')->name('.run-test');
                 Route::delete('/{faultGroup}', [FaultController::class, 'delete'])->name('.delete');
             });
     }

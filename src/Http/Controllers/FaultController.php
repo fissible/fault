@@ -37,7 +37,12 @@ class FaultController extends Controller
 
     public function show(FaultGroup $faultGroup): \Illuminate\View\View
     {
-        return view('fault::show', ['group' => $faultGroup]);
+        return view('fault::show', [
+            'group'          => $faultGroup,
+            'testFilePath'   => $this->stubGenerator->testFilePath($faultGroup),
+            'testFileExists' => file_exists($this->stubGenerator->testFilePath($faultGroup)),
+            'testClassName'  => $this->stubGenerator->testClassName($faultGroup),
+        ]);
     }
 
     public function updateStatus(Request $request, FaultGroup $faultGroup): Response
@@ -77,8 +82,79 @@ class FaultController extends Controller
 
         $faultGroup->update(['generated_test' => $stub]);
 
+        // Write the file to disk so "Run Test" can execute it immediately.
+        $this->stubGenerator->write($faultGroup);
+
         return response(
-            view('fault::partials.generated-test', ['group' => $faultGroup])->render(),
+            view('fault::partials.generated-test', [
+                'group'          => $faultGroup,
+                'testFilePath'   => $this->stubGenerator->testFilePath($faultGroup),
+                'testFileExists' => true,
+                'testClassName'  => $this->stubGenerator->testClassName($faultGroup),
+            ])->render(),
+            200,
+            ['Content-Type' => 'text/html'],
+        );
+    }
+
+    public function runTest(FaultGroup $faultGroup): Response
+    {
+        $testFile = $this->stubGenerator->testFilePath($faultGroup);
+
+        if (! file_exists($testFile)) {
+            return response(
+                view('fault::partials.test-result', [
+                    'group'   => $faultGroup,
+                    'output'  => null,
+                    'passed'  => false,
+                    'missing' => true,
+                ])->render(),
+                200,
+                ['Content-Type' => 'text/html'],
+            );
+        }
+
+        $relPath = 'tests/Unit/Faults/' . $this->stubGenerator->testClassName($faultGroup) . '.php';
+        $cmd     = [PHP_BINARY, base_path('artisan'), 'test', '--no-ansi', $relPath];
+        $env     = array_merge(getenv() ?: [], [
+            'APP_ENV'        => 'testing',
+            'SESSION_DRIVER' => 'array',
+            'DB_CONNECTION'  => 'sqlite',
+            'DB_DATABASE'    => ':memory:',
+        ]);
+
+        $process = proc_open($cmd, [
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ], $pipes, base_path(), $env);
+
+        $output   = '(no output)';
+        $exitCode = 1;
+
+        if ($process !== false) {
+            fclose($pipes[0]);
+            $stdout   = stream_get_contents($pipes[1]);
+            $stderr   = stream_get_contents($pipes[2]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            $exitCode = proc_close($process);
+            $combined = trim($stdout ?? '');
+            if ($stderr && trim($stderr)) {
+                $combined .= "\n" . trim($stderr);
+            }
+            $output = $combined ?: '(no output)';
+        }
+
+        $passed = $exitCode === 0;
+
+        return response(
+            view('fault::partials.test-result', [
+                'group'   => $faultGroup,
+                'output'  => $output,
+                'passed'  => $passed,
+                'missing' => false,
+            ])->render(),
             200,
             ['Content-Type' => 'text/html'],
         );

@@ -1,6 +1,6 @@
 <x-watch::layout title="{{ $group->shortClass() }}">
 
-<div class="fault-detail" x-data="{ notesChanged: false, testVisible: {{ $group->generated_test ? 'true' : 'false' }} }">
+<div class="fault-detail" x-data="{ notesChanged: false, testVisible: {{ $group->generated_test ? 'true' : 'false' }}, testFileExists: {{ $testFileExists ? 'true' : 'false' }} }">
 
     {{-- Back + status badge inline under the auto-rendered page-header --}}
     <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; margin-top:-0.5rem;">
@@ -114,15 +114,22 @@
                 hx-post="{{ route('watch.faults.test', $group) }}"
                 hx-target="#generated-test-section"
                 hx-swap="innerHTML"
-                x-on:htmx:after-request.window="testVisible = true">
+                x-on:htmx:after-request.window="testVisible = true; testFileExists = true">
             {{ $group->generated_test ? 'Regenerate Test' : 'Generate Test' }}
         </button>
 
         <div id="generated-test-section" x-show="testVisible" x-transition>
             @if ($group->generated_test)
-                @include('fault::partials.generated-test', ['group' => $group])
+                @include('fault::partials.generated-test', [
+                    'group'          => $group,
+                    'testFilePath'   => $testFilePath,
+                    'testFileExists' => $testFileExists,
+                    'testClassName'  => $testClassName,
+                ])
             @endif
         </div>
+
+        <div id="fault-test-result"></div>
     </div>
 
 </div>
