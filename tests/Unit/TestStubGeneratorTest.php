@@ -40,7 +40,7 @@ class TestStubGeneratorTest extends TestCase
         $generator = new TestStubGenerator();
         $stub      = $generator->generate($this->makeGroup(['group_hash' => str_repeat('b', 64)]));
 
-        $this->assertStringContainsString('@group fault-', $stub);
+        $this->assertStringContainsString("#[Group('fault-", $stub);
     }
 
     public function test_includes_file_and_line_in_docblock(): void

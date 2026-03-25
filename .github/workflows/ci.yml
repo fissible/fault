@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.2', '8.3']
+
+    steps:
+      - name: Checkout fault
+        uses: actions/checkout@v4
+        with:
+          path: fault
+
+      - name: Checkout watch (path dependency)
+        uses: actions/checkout@v4
+        with:
+          repository: fissible/watch
+          path: watch
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Install dependencies
+        working-directory: fault
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run tests
+        working-directory: fault
+        run: ./vendor/bin/phpunit
