@@ -81,6 +81,17 @@ class FaultReporterTest extends TestCase
         $this->assertSame(0, FaultGroup::count());
     }
 
+    public function test_capture_ignores_exceptions_matching_namespace_prefix(): void
+    {
+        config(['fault.ignore' => ['Symfony\\Component\\HttpKernel\\']]);
+
+        $reporter = new FaultReporter();
+        $result   = $reporter->capture(new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException());
+
+        $this->assertNull($result);
+        $this->assertSame(0, FaultGroup::count());
+    }
+
     public function test_same_exception_location_produces_same_fingerprint(): void
     {
         $reporter = new FaultReporter();

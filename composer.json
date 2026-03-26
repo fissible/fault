@@ -3,6 +3,14 @@
     "description": "Exception tracking and triage for fissible/watch cockpit",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/fissible/fault",
+    "keywords": ["laravel", "exceptions", "tracking", "triage", "devtools", "watch"],
+    "authors": [
+        {
+            "name": "Allen McCabe",
+            "homepage": "https://github.com/allenmccabe"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "fissible/watch": "^1.0",

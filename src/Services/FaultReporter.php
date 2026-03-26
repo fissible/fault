@@ -90,9 +90,14 @@ class FaultReporter
     private function shouldIgnore(Throwable $e): bool
     {
         $ignore = config('fault.ignore', []);
+        $class  = get_class($e);
 
         foreach ($ignore as $ignored) {
-            if ($e instanceof $ignored) {
+            if (str_ends_with($ignored, '\\')) {
+                if (str_starts_with($class, $ignored)) {
+                    return true;
+                }
+            } elseif ($e instanceof $ignored) {
                 return true;
             }
         }
