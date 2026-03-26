@@ -1,6 +1,6 @@
 # fissible/fault — Project
 
-Current version: **0.1.1**
+Current version: **1.0.0**
 Org standards: [fissible/.github](https://github.com/fissible/.github)
 
 ---
@@ -61,3 +61,27 @@ All features documented in README are implemented. No open issues.
 **Decisions:**
 - Switched to VCS repos instead of path repos so `^1.0` constraints resolve against real git tags; path repos require a `version` field in composer.json to work with semver constraints
 - Local dev note: `composer install` now fetches deps from GitHub rather than local siblings; add local path overrides if developing across repos simultaneously
+
+---
+
+### 2026-03-26 (continued)
+
+**Completed:**
+- Implemented namespace prefix wildcard in `shouldIgnore()` — entries ending with `\` now use `str_starts_with` instead of `instanceof`, matching the documented behaviour in `config/fault.php`
+- Added `FaultControllerTest` (Feature suite): 12 tests covering all 7 controller actions
+- Added `authors`, `keywords`, `homepage` to `composer.json`
+- Improved test coverage from 80% → 84% lines, 76% → 93% methods
+  - `FaultGroup`: 100% / 100%
+  - `TestStubGenerator`: 100% / 100%
+  - `FaultReporter`: 83% methods / 98% lines (re-entry guard + catch block covered)
+  - `FaultController`: 87% methods / 63% lines
+- Remaining gap: `FaultController::runTest` success path requires `php artisan test` in a real app; not testable in testbench isolation — integration test candidate for fissible/pilot
+- Cut **v1.0.0** (deliberate major bump to declare API stable)
+
+**Next task:** No scheduled tasks. Candidates:
+- Integration-test `runTest` success path in fissible/pilot
+- Publish to Packagist (not in current roadmap)
+
+**Decisions:**
+- `v1.0.0` cut as a `major` bump despite conventional commits suggesting `v0.2.0` — explicit declaration of API stability
+- `FaultController::runTest` success path is genuinely an integration concern: it spawns `php artisan test` which requires the host app's `vendor/autoload.php` + `artisan`; testbench skeleton has neither
