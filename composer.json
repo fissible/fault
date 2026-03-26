@@ -38,20 +38,20 @@
     "prefer-stable": true,
     "repositories": {
         "watch": {
-            "type": "path",
-            "url": "../watch"
+            "type": "vcs",
+            "url": "https://github.com/fissible/watch"
         },
         "accord": {
-            "type": "path",
-            "url": "../accord"
+            "type": "vcs",
+            "url": "https://github.com/fissible/accord"
         },
         "drift": {
-            "type": "path",
-            "url": "../drift"
+            "type": "vcs",
+            "url": "https://github.com/fissible/drift"
         },
         "forge": {
-            "type": "path",
-            "url": "../forge"
+            "type": "vcs",
+            "url": "https://github.com/fissible/forge"
         }
     }
 }

@@ -20,30 +20,6 @@ jobs:
         with:
           path: fault
 
-      - name: Checkout watch (path dependency)
-        uses: actions/checkout@v4
-        with:
-          repository: fissible/watch
-          path: watch
-
-      - name: Checkout accord (path dependency)
-        uses: actions/checkout@v4
-        with:
-          repository: fissible/accord
-          path: accord
-
-      - name: Checkout drift (path dependency)
-        uses: actions/checkout@v4
-        with:
-          repository: fissible/drift
-          path: drift
-
-      - name: Checkout forge (path dependency)
-        uses: actions/checkout@v4
-        with:
-          repository: fissible/forge
-          path: forge
-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
