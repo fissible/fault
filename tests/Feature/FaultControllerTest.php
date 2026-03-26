@@ -6,6 +6,7 @@ namespace Fissible\Fault\Tests\Feature;
 
 use Fissible\Fault\Models\FaultGroup;
 use Fissible\Fault\Services\TestStubGenerator;
+use Fissible\Fault\Services\FaultReporter;
 use Fissible\Fault\Tests\Support\NoOpMiddleware;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -64,6 +65,18 @@ class FaultControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($resolved->class_name);
         $response->assertDontSee($open->class_name);
+    }
+
+    public function test_index_filters_by_search_term(): void
+    {
+        $match   = $this->makeFaultGroup(['class_name' => 'SearchableException']);
+        $nomatch = $this->makeFaultGroup(['class_name' => 'UnrelatedError']);
+
+        $response = $this->get('/watch/faults?search=Searchable');
+
+        $response->assertStatus(200);
+        $response->assertSee($match->class_name);
+        $response->assertDontSee($nomatch->class_name);
     }
 
     // ── show ──────────────────────────────────────────────────────────────────
@@ -181,6 +194,25 @@ class FaultControllerTest extends TestCase
 
         $response->assertStatus(204);
         $this->assertNull(FaultGroup::find($group->id));
+    }
+
+    // ── TestStubGenerator::write ──────────────────────────────────────────────
+
+    public function test_stub_generator_write_creates_file_with_stub_content(): void
+    {
+        $group     = $this->makeFaultGroup();
+        $generator = app(TestStubGenerator::class);
+        $path      = $generator->testFilePath($group);
+
+        try {
+            $generator->write($group);
+
+            $this->assertFileExists($path);
+            $this->assertStringContainsString('FaultTest', file_get_contents($path));
+        } finally {
+            @unlink($path);
+            @rmdir(dirname($path));
+        }
     }
 
     // ── helpers ───────────────────────────────────────────────────────────────

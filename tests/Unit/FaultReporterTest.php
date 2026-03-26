@@ -60,6 +60,32 @@ class FaultReporterTest extends TestCase
         $this->assertSame(3, $group->occurrence_count);
     }
 
+    public function test_capture_returns_null_when_already_capturing(): void
+    {
+        $prop = new \ReflectionProperty(FaultReporter::class, 'capturing');
+        $prop->setValue(null, true);
+
+        try {
+            $result = (new FaultReporter())->capture(new Exception('re-entrant'));
+            $this->assertNull($result);
+        } finally {
+            $prop->setValue(null, false);
+        }
+    }
+
+    public function test_capture_returns_null_when_record_throws(): void
+    {
+        config(['database.default' => 'nonexistent']);
+
+        try {
+            $result = (new FaultReporter())->capture(new Exception('db fails'));
+        } finally {
+            config(['database.default' => 'testing']);
+        }
+
+        $this->assertNull($result);
+    }
+
     public function test_capture_returns_null_when_disabled(): void
     {
         config(['fault.enabled' => false]);
@@ -90,6 +116,22 @@ class FaultReporterTest extends TestCase
 
         $this->assertNull($result);
         $this->assertSame(0, FaultGroup::count());
+    }
+
+    public function test_fault_group_is_resolved_and_ignored_helpers(): void
+    {
+        $reporter = new FaultReporter();
+        $e        = new Exception('status helpers');
+
+        $group = $reporter->capture($e);
+        $this->assertFalse($group->isResolved());
+        $this->assertFalse($group->isIgnored());
+
+        $group->markResolved();
+        $this->assertTrue($group->fresh()->isResolved());
+
+        $group->markIgnored();
+        $this->assertTrue($group->fresh()->isIgnored());
     }
 
     public function test_same_exception_location_produces_same_fingerprint(): void
