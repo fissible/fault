@@ -1,6 +1,6 @@
 # fissible/fault — Project
 
-Current version: **0.1.0**
+Current version: **0.1.1**
 Org standards: [fissible/.github](https://github.com/fissible/.github)
 
 ---
@@ -38,3 +38,26 @@ All features documented in README are implemented. No open issues.
 - CI failed: `fissible/watch` was private — `actions/checkout` returned 404
 - Fixed by making `watch` public on GitHub (no code change needed)
 - fault CI confirmed green; Phase 12 exit condition fully met
+
+---
+
+### 2026-03-26
+
+**Completed:**
+- Fixed CI failure (fissible/fault#1 follow-up): `accord`, `drift`, `forge` path deps were not checked out in CI
+- Discovered path repos report as `dev-main` (no `version` field in composer.json) — `^1.0` constraint could never resolve
+- Switched all four repositories (`watch`, `accord`, `drift`, `forge`) from `path` to `vcs` type pointing to GitHub
+- Removed manual sibling checkout steps from CI (no longer needed with VCS repos)
+- Pinned `fissible/watch` to `^1.0` (was `@dev`)
+- Created GitHub Release for `v0.1.0` (tag existed but no Release object)
+- Closed fissible/fault#1
+- Cut **v0.1.1** with the VCS fix so installable versions resolve cleanly
+
+**Next task:** No scheduled tasks. Candidates (unchanged from prior session):
+- Fix config comment discrepancy: `fault.php` claims wildcard `str_starts_with` matching but `shouldIgnore()` uses `instanceof`
+- Add HTTP/controller tests (currently only unit coverage for `FaultReporter` and `TestStubGenerator`)
+- Publish to Packagist (not in current roadmap)
+
+**Decisions:**
+- Switched to VCS repos instead of path repos so `^1.0` constraints resolve against real git tags; path repos require a `version` field in composer.json to work with semver constraints
+- Local dev note: `composer install` now fetches deps from GitHub rather than local siblings; add local path overrides if developing across repos simultaneously
