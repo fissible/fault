@@ -42,6 +42,9 @@
             ]
         }
     },
+    "suggest": {
+        "filament/filament": "Required for the Filament admin plugin (^5.0)"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": {
