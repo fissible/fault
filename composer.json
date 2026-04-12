@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "fissible/watch": "^1.0",
+        "fissible/watch": "^1.0 || dev-main",
         "illuminate/contracts": "^11.0|^12.0",
         "illuminate/database": "^11.0|^12.0",
         "illuminate/http": "^11.0|^12.0",

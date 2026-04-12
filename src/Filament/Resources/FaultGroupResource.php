@@ -2,9 +2,10 @@
 
 namespace Fissible\Fault\Filament\Resources;
 
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Fissible\Fault\Models\FaultGroup;
@@ -101,27 +102,27 @@ class FaultGroupResource extends Resource
             ->poll('30s');
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $infolist): Schema
     {
         return $infolist->schema([
-            Infolists\Components\Section::make('Exception Details')
+            Section::make('Exception Details')
                 ->schema([
-                    Infolists\Components\TextEntry::make('class_name')->label('Class'),
-                    Infolists\Components\TextEntry::make('message'),
-                    Infolists\Components\TextEntry::make('file')->label('File'),
-                    Infolists\Components\TextEntry::make('line'),
-                    Infolists\Components\TextEntry::make('group_hash')->label('Fingerprint')->copyable(),
+                    TextEntry::make('class_name')->label('Class'),
+                    TextEntry::make('message'),
+                    TextEntry::make('file')->label('File'),
+                    TextEntry::make('line'),
+                    TextEntry::make('group_hash')->label('Fingerprint')->copyable(),
                 ]),
-            Infolists\Components\Section::make('Occurrence')
+            Section::make('Occurrence')
                 ->schema([
-                    Infolists\Components\TextEntry::make('occurrence_count')->label('Total Occurrences'),
-                    Infolists\Components\TextEntry::make('first_seen_at')->dateTime(),
-                    Infolists\Components\TextEntry::make('last_seen_at')->dateTime(),
-                    Infolists\Components\TextEntry::make('app_version')->placeholder('Unknown'),
+                    TextEntry::make('occurrence_count')->label('Total Occurrences'),
+                    TextEntry::make('first_seen_at')->dateTime(),
+                    TextEntry::make('last_seen_at')->dateTime(),
+                    TextEntry::make('app_version')->placeholder('Unknown'),
                 ]),
-            Infolists\Components\Section::make('Stack Trace')
+            Section::make('Stack Trace')
                 ->schema([
-                    Infolists\Components\TextEntry::make('sample_context')
+                    TextEntry::make('sample_context')
                         ->label('')
                         ->formatStateUsing(function ($state) {
                             if (! is_array($state)) {
@@ -147,9 +148,9 @@ class FaultGroupResource extends Resource
                         })
                         ->markdown(),
                 ]),
-            Infolists\Components\Section::make('Resolution')
+            Section::make('Resolution')
                 ->schema([
-                    Infolists\Components\TextEntry::make('status')
+                    TextEntry::make('status')
                         ->badge()
                         ->color(fn (string $state) => match ($state) {
                             'open' => 'danger',
@@ -157,13 +158,13 @@ class FaultGroupResource extends Resource
                             'ignored' => 'gray',
                             default => 'gray',
                         }),
-                    Infolists\Components\TextEntry::make('resolution_notes')->placeholder('No notes'),
-                    Infolists\Components\TextEntry::make('resolved_in_version')->label('Resolved in Version')->placeholder('—'),
-                    Infolists\Components\TextEntry::make('resolved_at')->dateTime()->placeholder('—'),
+                    TextEntry::make('resolution_notes')->placeholder('No notes'),
+                    TextEntry::make('resolved_in_version')->label('Resolved in Version')->placeholder('—'),
+                    TextEntry::make('resolved_at')->dateTime()->placeholder('—'),
                 ]),
-            Infolists\Components\Section::make('Generated Test')
+            Section::make('Generated Test')
                 ->schema([
-                    Infolists\Components\TextEntry::make('generated_test')
+                    TextEntry::make('generated_test')
                         ->label('')
                         ->markdown()
                         ->placeholder('No test generated'),
