@@ -1,6 +1,6 @@
 # fissible/fault — Project
 
-Current version: **1.0.0**
+Current version: **1.1.0**
 Org standards: [fissible/.github](https://github.com/fissible/.github)
 
 ---
@@ -86,6 +86,29 @@ All features documented in README are implemented. No open issues.
 - Filament code isolated under `src/Filament/` with zero imports from core — designed for future extraction to `fissible/fault-filament`
 - `resolved_by` stores user ID (not FK — package is app-agnostic, can't reference a specific users table)
 - FaultService guards `resolved_by`/`resolved_in_version` assignments with `in_array($fillable)` check for backwards compat
+
+---
+
+### 2026-04-12 (continued)
+
+**Completed:**
+- Updated `FaultGroupResource` for Filament v5: `Filament\Infolists\Infolist` → `Filament\Schemas\Schema`, `Section` moved to `Filament\Schemas\Components`, `TextEntry` stays in `Filament\Infolists\Components`
+- Loosened `fissible/watch` constraint: `"^1.0"` → `"^1.0 || dev-main"` (same pattern as sebastian/diff fix in Watch — allows parallel VCS development)
+- Cut **v1.1.0** (minor: Filament v5 compat + constraint fix)
+- Published to Packagist: https://packagist.org/packages/fissible/fault
+- Added Packagist auto-update job to release workflow (pings Packagist API after GitHub Release)
+- Set `PACKAGIST_USERNAME` + `PACKAGIST_API_TOKEN` secrets on all 5 fissible repos: fault, watch, accord, drift, forge
+- Published `fissible/watch` to Packagist: https://packagist.org/packages/fissible/watch
+
+**Next task:** No scheduled tasks. Candidates:
+- Integration test in Station (register FaultPlugin, verify resource renders with Filament v5)
+- Fix config comment discrepancy: `fault.php` claims wildcard `str_starts_with` matching but `shouldIgnore()` uses `instanceof`
+- Add HTTP/controller tests beyond current unit coverage
+- Publish remaining packages (accord, drift, forge) to Packagist
+
+**Decisions:**
+- Packagist webhook via GitHub Actions (not GitHub webhook) — keeps automation visible in workflow files and auditable
+- All fissible PHP repos share the same `PACKAGIST_USERNAME`/`PACKAGIST_API_TOKEN` secret pair
 
 ---
 
