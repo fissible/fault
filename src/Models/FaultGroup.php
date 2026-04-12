@@ -20,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string $status  open|resolved|ignored
  * @property string|null $resolution_notes
  * @property Carbon|null $resolved_at
+ * @property int|null $resolved_by
+ * @property string|null $resolved_in_version
  * @property string|null $app_version
  * @property array|null  $sample_context
  * @property string|null $generated_test
@@ -42,6 +44,8 @@ class FaultGroup extends Model
         'status',
         'resolution_notes',
         'resolved_at',
+        'resolved_by',
+        'resolved_in_version',
         'app_version',
         'sample_context',
         'generated_test',
