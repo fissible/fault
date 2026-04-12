@@ -64,6 +64,31 @@ All features documented in README are implemented. No open issues.
 
 ---
 
+### 2026-04-12
+
+**Completed:**
+- **Filament Plugin** — added `src/Filament/` with FaultPlugin, FaultGroupResource, FaultSummaryWidget
+  - FaultPlugin implements `Filament\Contracts\Plugin` with `enabled()` config toggle
+  - FaultGroupResource: table (status/class/message/location/count/dates), infolist (5 sections), triage actions (resolve/ignore/reopen), bulk resolve/ignore, type-to-confirm delete, 30s poll
+  - ViewFaultGroup: resolve with notes + version, ignore, reopen, generate test, delete
+  - FaultSummaryWidget: open count, new today, seen today stats
+  - Filament in `suggest` not `require` — zero impact on non-Filament consumers
+- **FaultService** — extracted mutation logic from FaultController into shared service layer (resolve, ignore, reopen, saveNotes, generateTest, delete). Both Blade UI and Filament call the same service.
+- **resolved_by + resolved_in_version** — new migration adds columns to `watch_fault_groups`. Model updated with fillable.
+- 3 new tests (FaultServiceTest), 34/34 full suite passing
+
+**Next task:** No scheduled tasks. Candidates:
+- Release v1.1.0 (Filament plugin is a minor feature addition)
+- Publish to Packagist
+- Integration test in Station (register FaultPlugin, verify resource renders)
+
+**Decisions:**
+- Filament code isolated under `src/Filament/` with zero imports from core — designed for future extraction to `fissible/fault-filament`
+- `resolved_by` stores user ID (not FK — package is app-agnostic, can't reference a specific users table)
+- FaultService guards `resolved_by`/`resolved_in_version` assignments with `in_array($fillable)` check for backwards compat
+
+---
+
 ### 2026-03-26 (continued)
 
 **Completed:**
