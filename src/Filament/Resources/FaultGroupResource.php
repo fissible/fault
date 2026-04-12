@@ -3,6 +3,7 @@
 namespace Fissible\Fault\Filament\Resources;
 
 use Filament\Infolists\Components\TextEntry;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -66,7 +67,7 @@ class FaultGroupResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                ViewAction::make(),
                 Tables\Actions\Action::make('resolve')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
